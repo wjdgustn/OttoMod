@@ -1,1 +1,19 @@
-{}
+{
+  "name": "ottomod",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "npx nodemon --signal SIGKILL main.js --debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wjdgustn/OttoMod.git"
+  },
+  "author": "HYONSU",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/wjdgustn/OttoMod/issues"
+  },
+  "homepage": "https://github.com/wjdgustn/OttoMod#readme"
+}
