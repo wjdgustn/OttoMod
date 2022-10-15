@@ -8,11 +8,6 @@ const newSchema = new Schema({
         required: true,
         unique: true
     },
-    blacklist: {
-        type: Boolean,
-        required: true,
-        default: false
-    },
     trackError: {
         type: Boolean,
         required: true,
@@ -22,6 +17,11 @@ const newSchema = new Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    lang: {
+        type: String,
+        required: true,
+        default: 'en'
     }
 });
 

@@ -6,41 +6,46 @@ const utils = require('../utils');
 module.exports = {
     info: {
         name: 'reload',
-        description: '봇의 기능들을 리로드합니다.',
+        ...getCommandDescription('RELOAD_DESCRIPTION'),
         options: [
             {
                 name: 'owners',
-                description: '디스코드 애플리케이션 소유자 정보를 다시 가져옵니다.',
+                ...getCommandDescription('RELOAD_OWNERS_DESCRIPTION'),
                 type: Options.Subcommand
             },
             {
                 name: 'jejudo',
-                description: 'jejudo를 재설정합니다.',
+                ...getCommandDescription('RELOAD_JEJUDO_DESCRIPTION'),
                 type: Options.Subcommand
             },
             {
                 name: 'commands',
-                description: '슬래시 커맨드를 다시 등록합니다.',
+                ...getCommandDescription('RELOAD_COMMANDS_DESCRIPTION'),
                 type: Options.Subcommand
             },
             {
                 name: 'modules',
-                description: '슬래시 커맨드 모듈을 다시 불러옵니다.',
+                ...getCommandDescription('RELOAD_MODULES_DESCRIPTION'),
+                type: Options.Subcommand
+            },
+            {
+                name: 'lang',
+                ...getCommandDescription('RELOAD_LANG_DESCRIPTION'),
                 type: Options.Subcommand
             },
             {
                 name: 'select',
-                description: '셀렉트 메뉴 핸들러를 다시 불러옵니다.',
+                ...getCommandDescription('RELOAD_SELECT_DESCRIPTION'),
                 type: Options.Subcommand
             },
             {
                 name: 'button',
-                description: '버튼 핸들러를 다시 불러옵니다.',
+                ...getCommandDescription('RELOAD_BUTTON_DESCRIPTION'),
                 type: Options.Subcommand
             },
             {
                 name: 'handler',
-                description: '기타 이벤트 핸들러를 다시 불러옵니다.',
+                ...getCommandDescription('RELOAD_HANDLER_DESCRIPTION'),
                 type: Options.Subcommand
             }
         ]
@@ -66,6 +71,9 @@ module.exports = {
             case 'owners':
                 await main.loadOwners();
                 break;
+            case 'lang':
+                lang.load();
+                break;
             case 'select':
                 main.loadSelectHandler();
                 break;
@@ -76,9 +84,12 @@ module.exports = {
                 main.loadHandler();
                 break;
             default:
-                return interaction.editReply('알 수 없는 리로드 대상입니다.');
+                return interaction.editReply(interaction.str('UNKNOWN_RELOAD_TARGET'));
         }
 
-        await interaction.editReply(`${target}${utils.checkBatchim(target) ? '을' : '를'} 리로드하였습니다.`);
+        await interaction.editReply(interaction.str('RELOADED')
+            .replace('{target}', target)
+            .replace('{el_rel}', utils.checkBatchim(target) ? '을' : '를')
+        );
     }
 }

@@ -7,12 +7,12 @@ const newSchema = new Schema({
         required: true,
         unique: true
     },
-    thread: {
+    channel: {
         type: String,
         required: true,
         unique: true
     },
-    private: {
+    anonymous: {
         type: Boolean,
         required: true,
         default: false

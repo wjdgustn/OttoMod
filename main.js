@@ -16,10 +16,12 @@ const {
 } = require('jejudo');
 const path = require('path');
 const util = require('util');
+const awaitModalSubmit = require('await-modal-submit');
 
 const setting = require('./setting.json');
 const Server = require('./server.json');
 const utils = require('./utils');
+const lang = require('./lang');
 
 const User = require('./schemas/user');
 const Ticket = require('./schemas/ticket');
@@ -54,6 +56,7 @@ const ServerCache = {
 module.exports.Server = ServerCache;
 
 utils.setup(client);
+awaitModalSubmit(client);
 
 const connect = require('./schemas');
 connect();
@@ -89,6 +92,7 @@ const loadJejudo = () => {
         main: module.exports,
         utils,
         Discord: require('discord.js'),
+        lang,
         User,
         Ticket,
         CommandHistory,
@@ -236,8 +240,19 @@ client.once('ready', async () => {
 client.on('interactionCreate', async interaction => {
     if(!interaction.guild) return;
 
-    let user = await User.findOne({
+    let locale = interaction.locale.substring(0, 2);
+    if(!lang.getLangList().includes(locale)) locale = 'en';
+
+    interaction.str = k => lang.langByLangName(locale, k);
+
+    let user = await User.findOneAndUpdate({
         id: interaction.user.id
+    }, {
+        lang: locale
+    }, {
+        upsert: true,
+        setDefaultsOnInsert: true,
+        new: true
     });
 
     if(interaction.isChatInputCommand() || interaction.isContextMenuCommand()) await CommandHistory.create({
@@ -252,13 +267,6 @@ client.on('interactionCreate', async interaction => {
         subCommandGroup: interaction.options.getSubcommandGroup(false),
         locale: interaction.locale
     });
-
-    if(!user) {
-        user = new User({
-            id: interaction.user.id
-        });
-        await user.save();
-    }
 
     if(user.blacklist && !ownerID.includes(user.id)) return;
 

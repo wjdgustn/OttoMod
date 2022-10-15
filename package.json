@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/wjdgustn/OttoMod#readme",
   "dependencies": {
+    "await-modal-submit": "^1.0.3",
     "discord.js": "^14.5.0",
     "jejudo": "^0.1.5",
     "mongoose": "^6.6.1"

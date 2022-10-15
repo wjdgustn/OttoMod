@@ -193,7 +193,7 @@ module.exports.subCommandHandler = directory => async interaction => {
         else handler(interaction);
     }
     else interaction.reply({
-        content: '오류가 발생했습니다!',
+        content: interaction.str('ERROR_MESSAGE'),
         ephemeral: true
     });
 }
