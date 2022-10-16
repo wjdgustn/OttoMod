@@ -27,12 +27,14 @@ const User = require('./schemas/user');
 const Ticket = require('./schemas/ticket');
 const CommandHistory = require('./schemas/commandHistory');
 const InteractionHistory = require('./schemas/interactionHistory');
+const TicketMessage = require('./schemas/ticketMessage');
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.DirectMessages,
         GatewayIntentBits.MessageContent
     ],
     partials: [
@@ -96,7 +98,8 @@ const loadJejudo = () => {
         User,
         Ticket,
         CommandHistory,
-        InteractionHistory
+        InteractionHistory,
+        TicketMessage
     }
 
     JejudoHandler = new Jejudo(client, {
@@ -230,7 +233,7 @@ client.once('ready', async () => {
     loadJejudo();
     loadCommands();
     // loadSelectHandler();
-    // loadButtonHandler();
+    loadButtonHandler();
     cacheServer();
     if(debug) client.guilds.cache.get(process.argv[3] || Server.guild).commands.fetch();
     registerCommands();

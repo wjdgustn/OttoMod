@@ -31,5 +31,12 @@
   "PUBLIC_TICKET_DESCRIPTION": "관리자에게 내 프로필 정보를 공개합니다.",
   "ANONYMOUS_TICKET": "익명 티켓",
   "ANONYMOUS_TICKET_DESCRIPTION": "관리자에게서 내 정보를 완전히 숨기지만, 일부 봇 관리자는 확인할 수 있습니다.",
-  "TIMED_OUT": "시간이 초과되었습니다."
+  "TIMED_OUT": "시간이 초과되었습니다.",
+  "CREATE_NEW_TICKET": "새 티켓 생성",
+  "CREATE_NEW_TICKET_TITLE_LABEL": "티켓 이름",
+  "CREATE_NEW_TICKET_TITLE_PLACEHOLDER": "티켓의 이름을 입력하세요.",
+  "CREATE_NEW_TICKET_CONTENT_LABEL": "전달할 메시지",
+  "CREATE_NEW_TICKET_CONTENT_PLACEHOLDER": "이 메시지가 관리자에게 보여집니다.",
+  "CREATE_NEW_TICKET_SUCCESS": "티켓이 생성되었습니다!",
+  "TICKET_CLOSED": "티켓이 닫혔습니다!\n다른 티켓을 생성하려면 새 메시지를 전송하세요."
 }

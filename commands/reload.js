@@ -1,6 +1,7 @@
 const { ApplicationCommandOptionType: Options } = require('discord.js');
 
 const main = require('../main');
+const { getCommandDescription } = require('../lang');
 const utils = require('../utils');
 
 module.exports = {

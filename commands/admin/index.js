@@ -1,5 +1,6 @@
 const { ApplicationCommandOptionType: Options } = require('discord.js');
 
+const { getCommandDescription } = require('../../lang');
 const utils = require('../../utils');
 
 const User = require('../../schemas/user');

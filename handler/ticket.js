@@ -7,7 +7,8 @@ const {
     ThreadAutoArchiveDuration,
     ModalBuilder,
     TextInputBuilder,
-    TextInputStyle
+    TextInputStyle,
+    MessageCollector
 } = require('discord.js');
 
 const { Server } = require('../main');
@@ -16,9 +17,8 @@ const lang = require('../lang');
 
 const User = require('../schemas/user');
 const Ticket = require('../schemas/ticket');
+const TicketMessage = require('../schemas/ticketMessage');
 
-const TicketArchiveDuration = 1000 * 60 * 60;
-const forum = Server.channel.ticket;
 const anonymousProfile = {
     username: '익명의빡빡이',
     avatarURL: 'https://media.discordapp.net/attachments/902492326482550804/1030705543041523753/Screenshot_20221015_135541.jpg'
@@ -33,19 +33,17 @@ module.exports = client => {
         });
         const str = k => lang.langByLangName(user?.lang || 'en', k);
 
-        if(message.channel.type === ChannelType.DM) {
-            await Ticket.deleteMany({
-                lastMessageAt: {
-                    $lt: Date.now() - TicketArchiveDuration
-                }
-            });
+        const forum = Server.channel.ticket;
 
-            let ticket = await Ticket.findOne({
-                user: message.author.id,
-                channel: message.channel.id
+        if(message.channel.type === ChannelType.DM) {
+            let ticket = await Ticket.findOneAndUpdate({
+                user: message.author.id
+            }, {
+                lastMessageAt: Date.now()
             });
 
             let channel;
+            let ticketContent = message.content;
 
             if(!ticket) {
                 const msg = await message.channel.send({
@@ -77,9 +75,9 @@ module.exports = client => {
                     ]
                 });
                 
-                let buttonResponse;
+                let selectResponse;
                 try {
-                    buttonResponse = await msg.awaitMessageComponent({
+                    selectResponse = await msg.awaitMessageComponent({
                         time: 1000 * 60
                     });
                 } catch(e) {
@@ -87,24 +85,59 @@ module.exports = client => {
                         components: utils.disableComponents(msg.components)
                     });
                 }
-                const anonymous = responsbuttonResponse.customId === 'anonymous';
+                const anonymous = selectResponse.values[0] === 'anonymous';
+
+                if(!user) {
+                    let locale = selectResponse.locale.substring(0, 2);
+                    if(!lang.getLangList().includes(locale)) locale = 'en';
+
+                    user = await User.findOneAndUpdate({
+                        id: message.author.id
+                    }, {
+                        lang: locale
+                    }, {
+                        upsert: true,
+                        setDefaultsOnInsert: true,
+                        new: true
+                    });
+                }
 
                 let modalResponse;
                 try {
-                    modalResponse = await buttonResponse.awaitModalSubmit();
+                    modalResponse = await selectResponse.awaitModalSubmit(
+                        new ModalBuilder()
+                            .setTitle(str('CREATE_NEW_TICKET'))
+                            .addComponents([
+                                new TextInputBuilder()
+                                    .setCustomId('title')
+                                    .setStyle(TextInputStyle.Short)
+                                    .setLabel(str('CREATE_NEW_TICKET_TITLE_LABEL'))
+                                    .setPlaceholder(str('CREATE_NEW_TICKET_TITLE_PLACEHOLDER'))
+                                    .setMaxLength(50),
+                                new TextInputBuilder()
+                                    .setCustomId('content')
+                                    .setStyle(TextInputStyle.Paragraph)
+                                    .setLabel(str('CREATE_NEW_TICKET_CONTENT_LABEL'))
+                                    .setPlaceholder(str('CREATE_NEW_TICKET_CONTENT_PLACEHOLDER'))
+                                    .setMaxLength(4000)
+                                    .setValue(message.content)
+                            ].map(component => new ActionRowBuilder().addComponents([component])))
+                    , 1000 * 60 * 10);
                 } catch(e) {
-                    return buttonResponse.followUp(str('TIMED_OUT'));
+                    return interaction.followUp(str('TIMED_OUT'));
                 }
 
-                ticket = new Ticket({
-                    user: message.author.id,
-                    channel: message.channel.id,
-                    anonymous
+                const title = modalResponse.fields.getTextInputValue('title');
+                ticketContent = modalResponse.fields.getTextInputValue('content');
+
+                const checkTicket = await Ticket.findOne({
+                    user: message.author.id
                 });
+                if(checkTicket) return;
 
                 channel = await forum.threads.create({
-                    name: anonymous ? anonymousProfile.username : message.author.tag,
-                    autoArchiveDuration: ThreadAutoArchiveDuration.OneHour,
+                    name: `${anonymous ? anonymousProfile.username : message.author.tag} - ${title}`,
+                    autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
                     message: {
                         content: 'Ticket Control',
                         components: [
@@ -119,33 +152,109 @@ module.exports = client => {
                     },
                     reason: `${client.user.username} ticket thread`
                 });
-            }
 
-            if(!channel) try {
-                channel = await forum.threads.fetch(ticket.channel);
-            } catch(e) {
-                return Ticket.deleteOne({
-                    user: message.author.id
+                ticket = new Ticket({
+                    user: message.author.id,
+                    channel: channel.id,
+                    anonymous
+                });
+                await ticket.save();
+
+                await modalResponse.update({
+                    content: str('CREATE_NEW_TICKET_SUCCESS'),
+                    components: []
                 });
             }
 
+            let webhookMessage;
             try {
-                await utils.sendWebhookMessage(forum, {
-                    username: anonymous ? anonymousProfile.username : message.author.username,
-                    avatarURL: anonymous ? anonymousProfile.avatarURL : message.author.displayAvatarURL()
+                webhookMessage = await utils.sendWebhookMessage(forum, {
+                    username: ticket.anonymous ? anonymousProfile.username : message.author.username,
+                    avatarURL: ticket.anonymous ? anonymousProfile.avatarURL : message.author.displayAvatarURL()
                 }, {
-                    content: message.content,
-                    files: [...message.attachments.values()]
+                    content: ticketContent,
+                    files: [...message.attachments.values()],
+                    threadId: ticket.channel
                 });
                 await message.react('✅');
             } catch(e) {
                 console.log(e);
                 await message.react('❌');
             }
+
+            if(webhookMessage) await TicketMessage.create({
+                ticketThread: ticket.channel,
+                dmMessage: message.id,
+                webhookMessage: webhookMessage.id
+            });
         }
 
         if(message.channel.type === ChannelType.PublicThread) {
-            
+            const ticket = await Ticket.findOneAndUpdate({
+                channel: message.channel.id
+            }, {
+                lastMessageAt: Date.now()
+            });
+            if(!ticket) return;
+
+            let ticketUser;
+            try {
+                ticketUser = await message.client.users.fetch(ticket.user);
+            } catch(e) {
+                return Ticket.deleteOne({
+                    channel: message.channel.id
+                });
+            }
+
+            const bot_mentions = [
+                `<@${message.client.user.id}>`,
+                `<@!${message.client.user.id}>`
+            ];
+            const bot_mentions_regex = bot_mentions.map(a => new RegExp(utils.escapeRegExp(a)));
+
+            if(!message.content.includes(bot_mentions[0]) && !message.content.includes(bot_mentions[1])) return;
+
+            let content = message.content;
+            for(let r of bot_mentions_regex) content = content.replace(r, '');
+
+            let dmMessage;
+            try {
+                dmMessage = await ticketUser.send({
+                    content,
+                    files: [...message.attachments.values()]
+                });
+                await message.react('✅');
+            } catch(e) {
+                await message.react('❌');
+            }
+
+            if(dmMessage) await TicketMessage.create({
+                ticketThread: message.channel.id,
+                dmMessage: dmMessage.id,
+                webhookMessage: message.id
+            });
         }
+    });
+
+    client.on('messageUpdate', async (oldMessage, newMessage) => {
+        if(newMessage.channel.type !== ChannelType.DM) return;
+
+        const dbMessage = await TicketMessage.findOne({
+            dmMessage: newMessage.id
+        });
+        if(!dbMessage) return;
+
+        let ticketChannel;
+        let ticketMessage;
+        let messageWebhook;
+        try {
+            ticketChannel = await client.channels.fetch(dbMessage.ticketThread);
+            ticketMessage = await ticketChannel.messages.fetch(dbMessage.webhookMessage);
+            messageWebhook = await ticketMessage.fetchWebhook();
+        } catch(e) {}
+
+        console.log(ticketMessage);
+
+        return messageWebhook.editMessage(ticketMessage, newMessage.content);
     });
 }
