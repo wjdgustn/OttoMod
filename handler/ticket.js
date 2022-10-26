@@ -7,8 +7,7 @@ const {
     ThreadAutoArchiveDuration,
     ModalBuilder,
     TextInputBuilder,
-    TextInputStyle,
-    MessageCollector
+    TextInputStyle
 } = require('discord.js');
 
 const { Server } = require('../main');
@@ -20,11 +19,40 @@ const Ticket = require('../schemas/ticket');
 const TicketMessage = require('../schemas/ticketMessage');
 
 const anonymousProfile = {
-    username: '익명의빡빡이',
-    avatarURL: 'https://media.discordapp.net/attachments/902492326482550804/1030705543041523753/Screenshot_20221015_135541.jpg'
+    username: 'Anonymous',
+    avatarURL: 'https://cdn.discordapp.com/attachments/920998660689506314/1034516279924625569/unknown.png'
 }
 
+const debug = process.argv[2] === '--debug';
+
 module.exports = client => {
+    setInterval(async () => {
+        const idleTickets = await Ticket.find({
+            lastMessageAt: {
+                $lt: Date.now() - 1000 * 60 * 60 * 24 * 3
+            },
+            moderatorReplied: false
+        });
+        await Promise.all(idleTickets.map(async ticket => {
+            let channel;
+            try {
+                channel = await client.channels.fetch(ticket.channel);
+            } catch(e) {
+                return Ticket.deleteOne({
+                    channel: ticket.channel
+                });
+            }
+            await channel.send({
+                content: '3d idle need message'
+            });
+            await Ticket.updateOne({
+                channel: ticket.channel
+            }, {
+                lastMessageAt: Date.now()
+            });
+        }));
+    }, debug ? 1000 * 5 : 1000 * 60);
+
     client.on('messageCreate', async message => {
         if(message.author.bot) return;
 
@@ -74,7 +102,7 @@ module.exports = client => {
                             ])
                     ]
                 });
-                
+
                 let selectResponse;
                 try {
                     selectResponse = await msg.awaitMessageComponent({
@@ -124,7 +152,7 @@ module.exports = client => {
                             ].map(component => new ActionRowBuilder().addComponents([component])))
                     , 1000 * 60 * 10);
                 } catch(e) {
-                    return interaction.followUp(str('TIMED_OUT'));
+                    return selectResponse.followUp(str('TIMED_OUT'));
                 }
 
                 const title = modalResponse.fields.getTextInputValue('title');
@@ -253,8 +281,9 @@ module.exports = client => {
             messageWebhook = await ticketMessage.fetchWebhook();
         } catch(e) {}
 
-        console.log(ticketMessage);
-
-        return messageWebhook.editMessage(ticketMessage, newMessage.content);
+        return messageWebhook.editMessage(ticketMessage, {
+            content: newMessage.content,
+            threadId: ticketChannel.id
+        });
     });
 }

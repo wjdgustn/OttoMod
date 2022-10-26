@@ -26,6 +26,11 @@ const newSchema = new Schema({
         type: Number,
         required: true,
         default: Date.now
+    },
+    moderatorReplied: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 

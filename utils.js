@@ -387,3 +387,8 @@ module.exports.getCommandMention = (commandName, subCommand) => {
 }
 
 module.exports.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+module.exports.getAllUrlInString = str => {
+    const regex = /(https?:\/\/\S+)/g;
+    return str.match(regex) || [];
+}

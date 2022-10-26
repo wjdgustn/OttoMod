@@ -38,7 +38,8 @@ const client = new Client({
         GatewayIntentBits.MessageContent
     ],
     partials: [
-        Partials.Channel
+        Partials.Channel,
+        Partials.Message
     ]
 });
 
@@ -71,7 +72,7 @@ let buttonHandler = {};
 let commands = [];
 
 const debug = process.argv[2] === '--debug';
-if(debug & !process.argv[3]) {
+if(debug && !process.argv[3]) {
     console.log('Debug guild missing');
     process.exit(1);
 }
