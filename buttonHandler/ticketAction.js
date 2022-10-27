@@ -1,4 +1,8 @@
-const { ChannelType } = require('discord.js');
+const {
+    ChannelType,
+    ButtonBuilder,
+    ButtonStyle
+} = require('discord.js');
 
 const utils = require('../utils');
 const lang = require('../lang');
@@ -14,7 +18,7 @@ module.exports = async interaction => {
     if(params.length < 2) return;
 
     const action = params[1];
-    
+
     if(action === 'close') {
         const ticket = await Ticket.findOneAndDelete({
             channel: interaction.channel.id
@@ -37,5 +41,25 @@ module.exports = async interaction => {
         } catch(e) {}
 
         return interaction.channel.setArchived();
+    }
+
+    if(action === 'reminder') {
+        const useReminder = params[2] === 'enable';
+
+        await Ticket.updateOne({
+            channel: interaction.channel.id
+        }, {
+            useReminder
+        });
+
+        interaction.message.components[0].components[1] = new ButtonBuilder()
+            .setCustomId(`ticketAction_reminder_${useReminder ? 'disable' : 'enable'}`)
+            .setLabel(useReminder ? 'Disable reminder' : 'Enable reminder')
+            .setStyle(useReminder ? ButtonStyle.Danger : ButtonStyle.Success)
+            .setEmoji('⏰');
+
+        return interaction.update({
+            components: interaction.message.components
+        });
     }
 }

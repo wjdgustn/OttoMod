@@ -1,5 +1,6 @@
 const {
     ChannelType,
+    EmbedBuilder,
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
@@ -31,7 +32,8 @@ module.exports = client => {
             lastMessageAt: {
                 $lt: Date.now() - 1000 * 60 * 60 * 24 * 3
             },
-            moderatorReplied: false
+            moderatorReplied: false,
+            useReminder: true
         });
         await Promise.all(idleTickets.map(async ticket => {
             let channel;
@@ -43,7 +45,7 @@ module.exports = client => {
                 });
             }
             await channel.send({
-                content: '3d idle need message'
+                content: `>>> **[Ticket Reminder]**\n\nYou haven't responded this ticket for more than 3 days. Please reply or close the ticket.`
             });
             await Ticket.updateOne({
                 channel: ticket.channel
@@ -59,7 +61,8 @@ module.exports = client => {
         let user = await User.findOne({
             id: message.author.id
         });
-        const str = k => lang.langByLangName(user?.lang || 'en', k);
+        const koreanIncluded = /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g.test(message.content);
+        const str = k => lang.langByLangName(user?.lang || (koreanIncluded ? 'ko' : 'en'), k);
 
         const forum = Server.channel.ticket;
 
@@ -67,7 +70,8 @@ module.exports = client => {
             let ticket = await Ticket.findOneAndUpdate({
                 user: message.author.id
             }, {
-                lastMessageAt: Date.now()
+                lastMessageAt: Date.now(),
+                moderatorReplied: false
             });
 
             let channel;
@@ -163,19 +167,42 @@ module.exports = client => {
                 });
                 if(checkTicket) return;
 
+                const buttonComponents = [
+                    new ButtonBuilder()
+                        .setCustomId('ticketAction_close')
+                        .setLabel('Close Ticket')
+                        .setStyle(ButtonStyle.Danger)
+                        .setEmoji('🚪'),
+                    new ButtonBuilder()
+                        .setCustomId('ticketAction_reminder_disable')
+                        .setLabel('Disable Reminder')
+                        .setStyle(ButtonStyle.Danger)
+                        .setEmoji('⏰')
+                ];
+                if(!anonymous) buttonComponents.unshift(new ButtonBuilder()
+                    .setURL(`discord://-/users/${message.author.id}`)
+                    .setLabel('User Profile')
+                    .setStyle(ButtonStyle.Link)
+                    .setEmoji('🔗'));
+
                 channel = await forum.threads.create({
                     name: `${anonymous ? anonymousProfile.username : message.author.tag} - ${title}`,
                     autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
                     message: {
-                        content: 'Ticket Control',
+                        embeds: [
+                            new EmbedBuilder()
+                                .setColor(0x349eeb)
+                                .setTitle('Ticket Information')
+                                .addFields([
+                                    {
+                                        name: 'User',
+                                        value: `${anonymous ? 'Anonymous User' : `${message.author} (${message.author.id})`}`
+                                    }
+                                ])
+                        ],
                         components: [
                             new ActionRowBuilder()
-                                .addComponents([
-                                    new ButtonBuilder()
-                                        .setCustomId('ticketAction_close')
-                                        .setLabel('Close Ticket')
-                                        .setStyle(ButtonStyle.Danger)
-                                ])
+                                .addComponents(buttonComponents)
                         ]
                     },
                     reason: `${client.user.username} ticket thread`
@@ -202,7 +229,10 @@ module.exports = client => {
                 }, {
                     content: ticketContent,
                     files: [...message.attachments.values()],
-                    threadId: ticket.channel
+                    threadId: ticket.channel,
+                    allowedMentions: {
+                        parse: []
+                    }
                 });
                 await message.react('✅');
             } catch(e) {
@@ -221,7 +251,8 @@ module.exports = client => {
             const ticket = await Ticket.findOneAndUpdate({
                 channel: message.channel.id
             }, {
-                lastMessageAt: Date.now()
+                lastMessageAt: Date.now(),
+                moderatorReplied: true
             });
             if(!ticket) return;
 
