@@ -4,7 +4,8 @@ const {
     EmbedBuilder,
     GatewayIntentBits,
     Partials,
-    InteractionType
+    InteractionType,
+    ActivityType
 } = require('discord.js');
 const fs = require('fs');
 const {
@@ -239,6 +240,10 @@ client.once('ready', async () => {
     if(debug) client.guilds.cache.get(process.argv[3] || Server.guild).commands.fetch();
     registerCommands();
     loadHandler();
+
+    client.user.setActivity('DM me to send a message to MOD TEAM', {
+        type: ActivityType.Watching
+    });
 });
 
 client.on('interactionCreate', async interaction => {
