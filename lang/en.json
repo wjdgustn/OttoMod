@@ -1,0 +1,23 @@
+{
+  "DISPLAY_NAME": "English",
+  "ERROR_MESSAGE": "An error has occurred.",
+  "UNKNOWN_RELOAD_TARGET": "Unknown reload target.",
+  "RELOADED": "Reloaded {target}.",
+  "COMMAND_ADMIN_DESCRIPTION": "Bot manager-only command.",
+  "COMMAND_ADMIN_TRACKERROR_DESCRIPTION": "Toggles the bot error tracking DM.",
+  "COMMAND_ADMIN_EPHEMERALONLY_DESCRIPTION": "Change all command results to 'ephemeral'.",
+  "COMMAND_ADMIN_SET_USER_DESCRIPTION": "Edits user's DB.",
+  "COMMAND_ADMIN_SET_USER_USER_DESCRIPTION": "User to edit DB.",
+  "COMMAND_ADMIN_SET_USER_KEY_DESCRIPTION": "Key to edit.",
+  "COMMAND_ADMIN_SET_USER_VALUE_DESCRIPTION": "Value to edit.",
+  "COMMAND_ADMIN_GET_USER_DESCRIPTION": "Checks user's DB.",
+  "COMMAND_ADMIN_GET_USER_USER_DESCRIPTION": "The user to view DB.",
+  "COMMAND_RELOAD_DESCRIPTION": "Reload the functions of the bot.",
+  "COMMAND_RELOAD_OWNERS_DESCRIPTION": "Re-import the Discord application owner information.",
+  "COMMAND_RELOAD_COMMANDS_DESCRIPTION": "Register the slash command again.",
+  "COMMAND_RELOAD_MODULES_DESCRIPTION": "Recall the slash command module.",
+  "COMMAND_RELOAD_LANG_DESCRIPTION": "Reloads the language file.",
+  "COMMAND_RELOAD_SELECT_DESCRIPTION": "Recall the select menu handler.",
+  "COMMAND_RELOAD_BUTTON_DESCRIPTION": "Recall the button handler.",
+  "COMMAND_RELOAD_HANDLER_DESCRIPTION": "Reload the event handler."
+}
