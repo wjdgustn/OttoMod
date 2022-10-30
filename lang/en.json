@@ -31,7 +31,7 @@
   "CREATE_NEW_TICKET_TITLE_LABEL": "Ticket Name",
   "CREATE_NEW_TICKET_TITLE_PLACEHOLDER": "Please fill in the ticket name here.",
   "CREATE_NEW_TICKET_CONTENT_LABEL": "Message",
-  "CREATE_NEW_TICKET_CONTENT_PLACEHOLDER": "This message will be sent to moderators.",
+  "CREATE_NEW_TICKET_CONTENT_PLACEHOLDER": "Please fill in the message content here.",
   "CREATE_NEW_TICKET_SUCCESS": "Successfully created a ticket!",
   "TICKET_CLOSED": "Ticket closed!\nPlease send a new message if you'd like to create another ticket."
 }
