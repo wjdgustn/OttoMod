@@ -94,14 +94,14 @@ module.exports = client => {
                                                 name: '📂'
                                             }
                                         },
-                                        {
-                                            label: str('ANONYMOUS_TICKET'),
-                                            description: str('ANONYMOUS_TICKET_DESCRIPTION'),
-                                            value: 'anonymous',
-                                            emoji: {
-                                                name: '🕵️'
-                                            }
-                                        }
+                                        // {
+                                        //     label: str('ANONYMOUS_TICKET'),
+                                        //     description: str('ANONYMOUS_TICKET_DESCRIPTION'),
+                                        //     value: 'anonymous',
+                                        //     emoji: {
+                                        //         name: '🕵️'
+                                        //     }
+                                        // }
                                     ])
                             ])
                     ]
