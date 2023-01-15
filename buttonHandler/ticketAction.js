@@ -32,6 +32,13 @@ module.exports = async interaction => {
             components: utils.disableComponents(interaction.message.components)
         });
 
+        await interaction.channel.send({
+            content: `${interaction.user} closed this ticket.`,
+            allowedMentions: {
+                parse: []
+            }
+        });
+
         try {
             const dbUser = await User.findOne({
                 id: ticket.user
