@@ -20,7 +20,7 @@
     "await-modal-submit": "^1.0.3",
     "discord.js": "^14.9.0",
     "jejudo": "^0.1.5",
-    "mongoose": "^6.6.1"
+    "mongoose": "^6.11.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
