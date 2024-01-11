@@ -38,5 +38,30 @@
   "CREATE_NEW_TICKET_CONTENT_LABEL": "전달할 메시지",
   "CREATE_NEW_TICKET_CONTENT_PLACEHOLDER": "이 메시지가 관리자에게 보여집니다.",
   "CREATE_NEW_TICKET_SUCCESS": "티켓이 생성되었습니다!",
-  "TICKET_CLOSED": "티켓이 닫혔습니다!\n다른 티켓을 생성하려면 새 메시지를 전송하세요."
+  "TICKET_CLOSED": "티켓이 닫혔습니다!\n다른 티켓을 생성하려면 새 메시지를 전송하세요.",
+
+  "COMMAND_STRIKE_DESCRIPTION": "유저에게 경고를 부여합니다.",
+  "COMMAND_STRIKE_USER_DESCRIPTION": "경고를 부여할 유저입니다.",
+  "COMMAND_STRIKE_RULE_DESCRIPTION": "위반한 규칙의 번호입니다.",
+  "COMMAND_STRIKE_DURATION_DESCRIPTION": "경고의 유효 기간입니다. 개월 단위로 입력하세요.",
+  "COMMAND_STRIKE_REASON_DESCRIPTION": "경고의 사유입니다.",
+  "COMMAND_STRIKE_EVIDENCE_DESCRIPTION": "경고의 증거입니다. 링크 등을 입력하세요.",
+
+  "STRIKE_SUCCESS": "{user}에게 규칙 #{rule} 위반으로 경고를 추가했습니다!",
+  "STRIKE_DM_FAILED": "경고: 대상자에게 DM을 보낼 수 없습니다! 필요한 경우 직접 안내하세요.",
+
+  "COMMAND_STRIKES_DESCRIPTION": "경고를 확인합니다.",
+  "COMMAND_STRIKES_USER_DESCRIPTION": "다른 유저의 경고를 확인합니다. 관리자만 사용할 수 있습니다.",
+
+  "STRIKES_NO_PERMISSION": "다른 유저의 경고는 관리자만 확인할 수 있습니다!",
+  "STRIKES_TITLE": "경고 목록",
+  "STRIKES_ACTIVE_TITLE": "활성 경고",
+  "STRIKES_EXPIRED_TITLE": "만료 경고",
+  "STRIKES_NOTHING": "경고 없음",
+
+  "COMMAND_SAY_DESCRIPTION": "봇이 메시지를 전송합니다.",
+  "COMMAND_SAY_CONTENT_DESCRIPTION": "전송할 메시지입니다.",
+
+  "COMMAND_EDIT_MESSAGE": "메시지 수정",
+  "EDIT_MESSAGE_CONTENT_LABEL": "메시지 내용"
 }

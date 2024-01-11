@@ -4,7 +4,8 @@ const {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    SelectMenuBuilder
+    SelectMenuBuilder,
+    PermissionsBitField: { Flags }
 } = require('discord.js');
 const Url = require('url');
 const querystring = require('querystring');
@@ -239,6 +240,10 @@ module.exports.teamOwnerOnlyHandler = async interaction => {
 
 module.exports.teamOnlyHandler = async interaction => {
     return module.exports.permissionChecker(interaction => main.getOwnerID().includes(interaction.user.id), '개발자')(interaction);
+}
+
+module.exports.modOnlyHandler = async interaction => {
+    return module.exports.permissionChecker(interaction => interaction.member?.permissions.has(Flags.ManageChannels), 'Mod')(interaction);
 }
 
 module.exports.jejudoPermissionHandler = async interaction => {

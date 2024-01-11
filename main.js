@@ -49,8 +49,10 @@ let JejudoHandler;
 let application
 let owners = [];
 let ownerID = [];
+let teamOwner;
 module.exports.getOwners = () => owners;
 module.exports.getOwnerID = () => ownerID;
+module.exports.getTeamOwner = () => teamOwner;
 
 const ServerCache = {
     role: {},
@@ -82,6 +84,7 @@ const loadOwners = async () => {
     application = await client.application.fetch();
     owners = application.owner instanceof Team ? application.owner.members.map(a => a.user) : [application.owner];
     ownerID = owners.map(a => a.id);
+    teamOwner = debug && process.argv[4] ? process.argv[4] : (application.owner instanceof Team ? application.owner.ownerId : application.owner.id);
 }
 
 const loadJejudo = () => {
