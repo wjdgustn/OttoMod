@@ -74,9 +74,15 @@ module.exports = {
                 .catch(_ => failedDM = true)
         ]);
 
+        const count = await Strike.countDocuments({
+            user: user.id,
+            expiresAt: { $gt: Date.now() }
+        });
+
         let content = interaction.str('STRIKE_SUCCESS')
             .replace('{user}', user)
-            .replace('{rule}', rule);
+            .replace('{rule}', rule)
+            .replace('{count}', count);
 
         if(failedDM) content += '\n\n' + interaction.str('STRIKE_DM_FAILED');
 
