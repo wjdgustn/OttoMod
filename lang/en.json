@@ -40,7 +40,7 @@
   "COMMAND_STRIKE_DURATION_DESCRIPTION": "Warn expiry timespan, in months unit.",
   "COMMAND_STRIKE_REASON_DESCRIPTION": "Strike reason.",
   "COMMAND_STRIKE_EVIDENCE_DESCRIPTION": "The evidence of strike. Accepts link etc.",
-  "STRIKE_SUCCESS": "Striked {user} by violation of rule #{rule}.\n\nCurrent active strikes: {count}",
+  "STRIKE_SUCCESS": "You added a strike to {user} for violating rule #{rule} violation!\n\nCurrent active strikes: {count}",
   "STRIKE_DM_FAILED": "Note: Couldn't send DM to specified user. DM manually if needed.",
   "COMMAND_STRIKES_DESCRIPTION": "Displays received strikes.",
   "COMMAND_STRIKES_USER_DESCRIPTION": "Displays strikes of other users. Moderators only.",
