@@ -59,7 +59,7 @@ module.exports = async interaction => {
             useReminder
         });
 
-        interaction.message.components[0].components[1] = new ButtonBuilder()
+        interaction.message.components[0].components[2] = new ButtonBuilder()
             .setCustomId(`ticketAction_reminder_${useReminder ? 'disable' : 'enable'}`)
             .setLabel(useReminder ? 'Disable reminder' : 'Enable reminder')
             .setStyle(useReminder ? ButtonStyle.Danger : ButtonStyle.Success)
